@@ -38,7 +38,7 @@ jobs:
       # 5. Simpan credential dari GitHub Secrets ke file
       - name: Write GDrive Credentials to file
         run: |
-          echo '${{ secrets.GDRIVE_CREDENTIALS }}' > gdrive_credentials.json
+          echo '${{ secrets.GDRIVE_OAUTH_CREDENTIALS }}' > gdrive_credentials.json
 
       # Run as a mlflow project
       - name: Run mlflow project
@@ -50,7 +50,7 @@ jobs:
         run: |
           pip install --upgrade google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib
 
-          echo "${{ secrets.GDRIVE_CREDENTIALS }}" > gdrive_credentials.json
+          echo "${{ secrets.GDRIVE_OAUTH_CREDENTIALS }}" > gdrive_credentials.json
 
           python <<EOF
           import os
