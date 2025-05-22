@@ -45,10 +45,48 @@ jobs:
         run: |
           mlflow run MLproject --env-manager=local 
       
-     # 7. Upload model ke Google Drive (ganti dengan skripmu sendiri jika perlu)
-      - name: Upload model to Google Drive
+     # Upload to Google Drive
+      - name: Upload mlruns to Google Drive
         run: |
-          python your_script_to_upload_to_drive.py --credentials gdrive_credentials.json --folder-id ${{ secrets.GDRIVE_FOLDER_ID }}
+          pip install --upgrade google-api-python-client google-auth google-auth-httplib2 google-auth-oauthlib
+
+          echo "${{ secrets.GDRIVE_CREDENTIALS }}" > gdrive_credentials.json
+
+          python <<EOF
+          import os
+          from google.oauth2 import service_account
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaFileUpload
+
+          # Auth setup
+          creds = service_account.Credentials.from_service_account_file(
+              "gdrive_credentials.json",
+              scopes=["https://www.googleapis.com/auth/drive"]
+          )
+          service = build("drive", "v3", credentials=creds)
+
+          folder_id = "${{ secrets.GDRIVE_FOLDER_ID }}"
+          upload_dir = "mlruns"
+
+          for root, _, files in os.walk(upload_dir):
+              for file in files:
+                  file_path = os.path.join(root, file)
+                  file_name = os.path.basename(file)
+
+                  file_metadata = {
+                      "name": file_name,
+                      "parents": [folder_id]
+                  }
+
+                  media = MediaFileUpload(file_path, resumable=True)
+                  service.files().create(
+                      body=file_metadata,
+                      media_body=media,
+                      fields="id"
+                  ).execute()
+
+                  print(f"Uploaded {file_name}")
+          EOF
       
  
   
