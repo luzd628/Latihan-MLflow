@@ -41,4 +41,4 @@ if __name__ == "__main__":
         accuracy = model.score(X_test, y_test)  
         mlflow.log_metric("accuracy", accuracy)  
 
-        # coba ci action
+        # coba ci action   
