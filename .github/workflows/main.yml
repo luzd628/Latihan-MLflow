@@ -30,7 +30,7 @@ jobs:
           echo $CSV_URL
  
       # Install mlflow
-      - name: Install dependencies
+      - name: Install dependencies 
         run: |
           python -m pip install --upgrade pip
           pip install mlflow gdown google-api-python-client google-auth google-auth-oauthlib google-auth-httplib2
