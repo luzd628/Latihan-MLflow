@@ -33,29 +33,22 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install mlflow
-      
+          pip install mlflow gdown google-api-python-client google-auth google-auth-oauthlib google-auth-httplib2
+
+      # 5. Simpan credential dari GitHub Secrets ke file
+      - name: Write GDrive Credentials to file
+        run: |
+          echo '${{ secrets.GDRIVE_CREDENTIALS }}' > gdrive_credentials.json
+
       # Run as a mlflow project
       - name: Run mlflow project
         run: |
           mlflow run MLproject --env-manager=local 
       
-      # Set Up LFS
-      - name: Set up GIT LFS
+     # 7. Upload model ke Google Drive (ganti dengan skripmu sendiri jika perlu)
+      - name: Upload model to Google Drive
         run: |
-           git config --global user.name ${{ secrets.username }}
-           git config --global user.email ${{ secrets.email }}
-           git lfs install
-           git lfs track "mlruns/**"
-           git add .gitattributes
-           git commit -m "Track large files in mlruns with Git LFS" || true
-           git push origin main
+          python your_script_to_upload_to_drive.py --credentials gdrive_credentials.json --folder-id ${{ secrets.GDRIVE_FOLDER_ID }}
+      
  
-      # Save models to GitHub Repository
-      - name: Save mlruns to repo
-        run: |
-          git config --global user.name ${{ secrets.username }}
-          git config --global user.email ${{ secrets.email }}
-          git add mlruns/
-          git commit -m "Save mlruns from CI run"
-          git push origin main
+  
